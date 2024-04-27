@@ -1,8 +1,7 @@
 import { Injectable } from '@angular/core';
-import { catchError } from 'rxjs/internal/operators';
 import { HttpClient, HttpHeaders, HttpErrorResponse } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { map, catchError } from 'rxjs/operators';
 
 //Declaring the api url that will provide data for the client app
 const apiUrl = 'https://my-movie-flix-md-b48020e1b074.herokuapp.com/';
@@ -10,6 +9,7 @@ const apiUrl = 'https://my-movie-flix-md-b48020e1b074.herokuapp.com/';
 @Injectable({
   providedIn: 'root'
 })
+
 export class UserRegistrationService {
   // Inject the HttpClient module to the constructor params
   // This will provide HttpClient to the entire class, making it available via this.http
@@ -18,7 +18,7 @@ export class UserRegistrationService {
   // Making the api call for the user registration endpoint
   public userRegistration(userDetails: any): Observable<any> {
     console.log(userDetails);
-    return this.http.post(apiUrl + 'signup', userDetails).pipe(
+    return this.http.post(apiUrl + 'users', userDetails).pipe(
       catchError(this.handleError)
     );
   }
@@ -26,7 +26,7 @@ export class UserRegistrationService {
   // Login endpoint
   public userLogin(userDetails: any): Observable<any> {
     console.log(userDetails);
-    return this.http.post(apiUrl + 'login', userDetails).pipe(
+    return this.http.post(apiUrl + 'users', userDetails).pipe(
       catchError(this.handleError)
     );
   }
@@ -102,9 +102,9 @@ export class UserRegistrationService {
   }
 
   // GetUserFavs Endpoint
-  getUserFavs(): Observable<any> {
+  getUserFavs(userId: string): Observable<any> {
     const token = localStorage.getItem('token');
-    return this.http.get(apiUrl + 'users' + FavoriteMovies, {
+    return this.http.get(apiUrl + 'users/' + userId + '/FavoriteMovies', {
       headers: new HttpHeaders(
         {
           Authorization: 'Bearer ' + token,
@@ -116,13 +116,12 @@ export class UserRegistrationService {
   }
 
   // AddUserFavs Endpoint
-  addUserFavs(): Observable<any> {
+  addUserFav(userId: string, movieId: string): Observable<any> {
     const token = localStorage.getItem('token');
-    return this.http.get(apiUrl + 'users' + FavoriteMovies, {
-      headers: new HttpHeaders(
-        {
-          Authorization: 'Bearer ' + token,
-        })
+    return this.http.post(apiUrl + 'users/' + userId + '/movies/' + movieId, movieId, {
+      headers: new HttpHeaders({
+        Authorization: 'Bearer ' + token,
+      })
     }).pipe(
       map(this.extractResponseData),
       catchError(this.handleError)
@@ -130,13 +129,12 @@ export class UserRegistrationService {
   }
 
   // RemoveUserFavs Endpoint
-  removeUserFavs(): Observable<any> {
+  removeUserFavs(userId: string, movieId: string): Observable<any> {
     const token = localStorage.getItem('token');
-    return this.http.get(apiUrl + 'users' + FavoriteMovies, {
-      headers: new HttpHeaders(
-        {
-          Authorization: 'Bearer ' + token,
-        })
+    return this.http.delete(apiUrl + 'users/' + userId + '/movies/' + movieId, {
+      headers: new HttpHeaders({
+        Authorization: 'Bearer ' + token,
+      })
     }).pipe(
       map(this.extractResponseData),
       catchError(this.handleError)
@@ -144,13 +142,13 @@ export class UserRegistrationService {
   }
 
   // EditUser Endpoint
-  editUser(): Observable<any> {
+  editUser(userDetails: any): Observable<any> {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
     const token = localStorage.getItem('token');
-    return this.http.get(apiUrl + 'users' + Username, {
-      headers: new HttpHeaders(
-        {
-          Authorization: 'Bearer ' + token,
-        })
+    return this.http.put(apiUrl + 'users/' + user._id, userDetails, {
+      headers: new HttpHeaders({
+        Authorization: 'Bearer ' + token,
+      })
     }).pipe(
       map(this.extractResponseData),
       catchError(this.handleError)
@@ -158,13 +156,12 @@ export class UserRegistrationService {
   }
 
   // DeleteUser Endpoint
-  deleteUser(): Observable<any> {
+  deleteUser(userId: string): Observable<any> {
     const token = localStorage.getItem('token');
-    return this.http.get(apiUrl + 'users' + Username, {
-      headers: new HttpHeaders(
-        {
-          Authorization: 'Bearer ' + token,
-        })
+    return this.http.delete(apiUrl + 'users/' + userId, {
+      headers: new HttpHeaders({
+        Authorization: 'Bearer ' + token,
+      })
     }).pipe(
       map(this.extractResponseData),
       catchError(this.handleError)
@@ -172,7 +169,7 @@ export class UserRegistrationService {
   }
 
   // Non-typed response extraction
-  private extractResponseData(res: Response): any {
+  private extractResponseData(res: Response | Object): any {
     const body = res;
     return body || {};
   }
