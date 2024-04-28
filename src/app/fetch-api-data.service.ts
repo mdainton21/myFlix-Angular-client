@@ -10,23 +10,22 @@ const apiUrl = 'https://my-movie-flix-md-b48020e1b074.herokuapp.com/';
   providedIn: 'root'
 })
 
-export class UserRegistrationService {
+export class FetchApiDataService {
   // Inject the HttpClient module to the constructor params
   // This will provide HttpClient to the entire class, making it available via this.http
-  constructor(private http: HttpClient) {
-  }
-  // Making the api call for the user registration endpoint
+  constructor(private http: HttpClient) { }
+
   public userRegistration(userDetails: any): Observable<any> {
     console.log(userDetails);
     return this.http.post(apiUrl + 'users', userDetails).pipe(
       catchError(this.handleError)
     );
   }
+  
 
   // Login endpoint
   public userLogin(userDetails: any): Observable<any> {
-    console.log(userDetails);
-    return this.http.post(apiUrl + 'users', userDetails).pipe(
+    return this.http.post(apiUrl + 'login', userDetails).pipe(
       catchError(this.handleError)
     );
   }
@@ -168,12 +167,6 @@ export class UserRegistrationService {
     );
   }
 
-  // Non-typed response extraction
-  private extractResponseData(res: Response | Object): any {
-    const body = res;
-    return body || {};
-  }
-
   private handleError(error: HttpErrorResponse): any {
     if (error.error instanceof ErrorEvent) {
       console.error('Some error occurred:', error.error.message);
@@ -184,5 +177,9 @@ export class UserRegistrationService {
     }
     return throwError(
       'Something bad happened; please try again later.');
+  }
+  private extractResponseData(res: Response | Object): any{
+    const body = res;
+    return body || { };
   }
 }
