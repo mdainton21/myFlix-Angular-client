@@ -10,6 +10,12 @@
    background-color: black;
 }
 
+.movie-card {
+   display: flex;
+   flex: 1 1 auto;
+   max-width: 480px;
+}
+
 .title {
    color: white;
 }
