@@ -102,7 +102,7 @@ export class MovieCardComponent implements OnInit {
     this.fetchApiData.removeUserFavs(movie).subscribe((response) => {
       localStorage.setItem('user', JSON.stringify(response));
       this.getFavMovies();
-      this.snackBar.open('Movie has been deleted from your favorites!', 'OK', {
+      this.snackBar.open('Movie has been removed from your favorites!', 'OK', {
         duration: 3000,
       });
     });
