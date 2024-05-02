@@ -1,0 +1,35 @@
+<app-toolbar></app-toolbar>
+<div style="display: flex;">
+    <mat-card *ngFor="let movie of movies;" style="flex: 1 1 auto;">
+        <mat-card-header>
+            <mat-card-title>{{movie.Title}}</mat-card-title>
+            <mat-card-subtitle>Directed by: {{movie.Director.Name}}</mat-card-subtitle>
+        </mat-card-header>
+        <img src={{movie.ImagePath}} alt={{movie.Title}} width="400px" />
+        <mat-card-actions>
+            <button mat-raised-button color="primary" (click)="openGenreDialog(
+                movie.Genre.Name,
+                movie.Genre.Description
+                )">
+                Genre
+            </button>
+            <button mat-raised-button color="primary" (click)="openDirectorDialog(
+                movie.Director.Name,
+                movie.Director.Bio,
+                movie.Director.Birth
+                )">
+                Director
+            </button>
+            <button mat-raised-button color="primary" (click)="openSummaryDialog(
+                movie.Title,
+                movie.Description
+                )">
+                Description
+            </button>
+            <button mat-icon-button color="primary"
+                (click)="isFavoriteMovie(movie._id) ? deleteFavMovies(movie._id) : addFavMovies(movie._id)">
+                <mat-icon>{{isFavoriteMovie(movie._id) ? 'favorite' : 'favorite_border' }}</mat-icon>
+            </button>
+        </mat-card-actions>
+    </mat-card>
+</div>

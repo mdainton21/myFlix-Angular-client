@@ -86,41 +86,35 @@ export class FetchApiDataService {
     );
   }
 
-  // GetUser Endpoint
-  getUser(Username: string): Observable<any> {
-    const token = localStorage.getItem('token');
-    return this.http.get(apiUrl + 'users' + Username, {
-      headers: new HttpHeaders(
-        {
-          Authorization: 'Bearer ' + token,
-        })
-    }).pipe(
-      map(this.extractResponseData),
-      catchError(this.handleError)
-    );
+  // GetUser Endpoint.
+  getUser(): Observable<any> {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    return user;
   }
 
   // GetUserFavs Endpoint
-  getUserFavs(userId: string): Observable<any> {
+  // getUserFavs(userId: string): Observable<any> {
+  //   const token = localStorage.getItem('token');
+  //   return this.http.get(apiUrl + 'users/' + userId + '/FavoriteMovies', {
+  //     headers: new HttpHeaders(
+  //       {
+  //         Authorization: 'Bearer ' + token,
+  //       })
+  //   }).pipe(
+  //     map(this.extractResponseData),
+  //     catchError(this.handleError)
+  //   );
+  // }
+
+  // AddUserFavs Endpoint
+  addUserFavs(movieID: string): Observable<any> {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
     const token = localStorage.getItem('token');
-    return this.http.get(apiUrl + 'users/' + userId + '/FavoriteMovies', {
+    return this.http.post(apiUrl + `users/${user.Username}/movies/${movieID}`, {}, {
       headers: new HttpHeaders(
         {
           Authorization: 'Bearer ' + token,
         })
-    }).pipe(
-      map(this.extractResponseData),
-      catchError(this.handleError)
-    );
-  }
-
-  // AddUserFavs Endpoint
-  addUserFav(userId: string, movieId: string): Observable<any> {
-    const token = localStorage.getItem('token');
-    return this.http.post(apiUrl + 'users/' + userId + '/movies/' + movieId, movieId, {
-      headers: new HttpHeaders({
-        Authorization: 'Bearer ' + token,
-      })
     }).pipe(
       map(this.extractResponseData),
       catchError(this.handleError)
@@ -128,12 +122,14 @@ export class FetchApiDataService {
   }
 
   // RemoveUserFavs Endpoint
-  removeUserFavs(userId: string, movieId: string): Observable<any> {
+  removeUserFavs(movieID: string): Observable<any> {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
     const token = localStorage.getItem('token');
-    return this.http.delete(apiUrl + 'users/' + userId + '/movies/' + movieId, {
-      headers: new HttpHeaders({
-        Authorization: 'Bearer ' + token,
-      })
+    return this.http.delete(apiUrl + `users/${user.Username}/movies/${movieID}`, {
+      headers: new HttpHeaders(
+        {
+          Authorization: 'Bearer ' + token,
+        })
     }).pipe(
       map(this.extractResponseData),
       catchError(this.handleError)
@@ -155,31 +151,35 @@ export class FetchApiDataService {
   }
 
   // DeleteUser Endpoint
-  deleteUser(userId: string): Observable<any> {
+  deleteUser(): Observable<any> {
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
     const token = localStorage.getItem('token');
-    return this.http.delete(apiUrl + 'users/' + userId, {
-      headers: new HttpHeaders({
-        Authorization: 'Bearer ' + token,
-      })
+    return this.http.delete(apiUrl + 'users/' + user._id, {
+      headers: new HttpHeaders(
+        {
+          Authorization: 'Bearer ' + token,
+        })
     }).pipe(
       map(this.extractResponseData),
       catchError(this.handleError)
     );
   }
 
-  private handleError(error: HttpErrorResponse): any {
+  protected handleError(error: HttpErrorResponse): any {
     if (error.error instanceof ErrorEvent) {
-      console.error('Some error occurred:', error.error.message);
+      // Client-side error
+      console.error('An error occurred:', error.error.message);
     } else {
+      // Server-side error
       console.error(
-        `Error Status code ${error.status}, ` +
-        `Error body is: ${error.error}`);
+        `Error Status code ${error.status}, ` + `Error body is: ${error.error}`
+      );
     }
-    return throwError(
-      'Something bad happened; please try again later.');
+    // Return an observable with an error message
+    const err = new Error('Something went wrong, please try again later.');
+    throwError(() => err);
   }
-  private extractResponseData(res: Response | Object): any{
-    const body = res;
-    return body || { };
+  protected extractResponseData(res: any): any {
+    return res || {}; // Return the response body or an empty object
   }
 }
