@@ -63,7 +63,7 @@ export class ProfilePageComponent implements OnInit {
 
   deleteUser(): void {
     if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-      this.fetchData.deleteUser().subscribe((response) => {
+      this.fetchData.deleteUser(this.userData).subscribe((response) => {
         console.log('Deleted User', response);
         localStorage.clear();
         this.router.navigate(['welcome']);

@@ -21,7 +21,7 @@ export class FetchApiDataService {
       catchError(this.handleError)
     );
   }
-  
+
 
   // Login endpoint
   public userLogin(userDetails: any): Observable<any> {
@@ -138,9 +138,8 @@ export class FetchApiDataService {
 
   // EditUser Endpoint
   editUser(userDetails: any): Observable<any> {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
     const token = localStorage.getItem('token');
-    return this.http.put(apiUrl + 'users/' + user._id, userDetails, {
+    return this.http.put(apiUrl + 'users/' + userDetails.Username, userDetails, {
       headers: new HttpHeaders({
         Authorization: 'Bearer ' + token,
       })
@@ -151,10 +150,9 @@ export class FetchApiDataService {
   }
 
   // DeleteUser Endpoint
-  deleteUser(): Observable<any> {
-    const user = JSON.parse(localStorage.getItem('user') || '{}');
+  deleteUser(userDetails: any): Observable<any> {
     const token = localStorage.getItem('token');
-    return this.http.delete(apiUrl + 'users/' + user._id, {
+    return this.http.delete(apiUrl + 'users/' + userDetails.Username, {
       headers: new HttpHeaders(
         {
           Authorization: 'Bearer ' + token,
