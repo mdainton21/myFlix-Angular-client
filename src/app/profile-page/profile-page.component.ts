@@ -63,18 +63,17 @@ export class ProfilePageComponent implements OnInit {
 
   deleteUser(): void {
     if (confirm('Are you sure you want to delete your account? This action cannot be undone.')) {
-      this.fetchData.deleteUser().subscribe((response) => {
-        console.log('Deleted User', response);
-        localStorage.setItem('token', '');
-        localStorage.setItem('user', '');
-        this.router.navigate(['welcome']);
+      this.fetchData.deleteUser().subscribe((response: any) => {
+        this.fetchData = response;
+        console.log(response);
+        
       });
-      () => {
-        this.snackBar.open('Error, Profile not updated', 'No success', {
+        this.snackBar.open('Profile Deleted', 'Success', {
           duration: 2000,
         });
+        this.router.navigate(['welcome']);
       }
     }
   }
 
-}
+
